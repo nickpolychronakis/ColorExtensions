@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "ColorExtensions",
+    platforms: [
+        SupportedPlatform.iOS(.v14),
+        SupportedPlatform.macOS(SupportedPlatform.MacOSVersion.v11)
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
