@@ -17,9 +17,12 @@ final class ColorExtensionsTests: XCTestCase {
             .orange,
             .black,
             .white,
-            .blue
+            .blue,
+            .clear,
+            .accentColor
         ]
         for underTestColor in underTestColors {
+//            print(underTestColor.description)
             let colorData = underTestColor.convertToData()
             XCTAssertNotNil(colorData, "Δεν δούλεψε σωστά η μετατροπή απο color σε data")
             let colorFromData = Color(colorData)
@@ -53,5 +56,8 @@ final class ColorExtensionsTests: XCTestCase {
     }
     
     // MARK: - INTERNALS
+    
+    
+    
     
 }

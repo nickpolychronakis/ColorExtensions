@@ -1,3 +1,3 @@
 # ColorExtensions
 
-A description of this package.
+Διάφορες συναρτήσεις ως extension για το Color.

@@ -15,7 +15,7 @@ public extension Color {
     init?(_ data: Data?) {
         guard let data = data else { return nil }
         guard let newDiaryColor = try? JSONDecoder().decode(DiaryColor.self, from: data) else { return nil }
-        let uiColor = UIColor(red: newDiaryColor.r, green: newDiaryColor.g, blue: newDiaryColor.b, alpha: newDiaryColor.a)
+        let uiColor = NativeColor(red: newDiaryColor.r, green: newDiaryColor.g, blue: newDiaryColor.b, alpha: newDiaryColor.a)
         self.init(uiColor)
     }
     
@@ -30,10 +30,10 @@ public extension Color {
     // MARK: - ACCESSIBLE COLORS
     /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό ή μαύρο. Προορίζεται για Fonts, για να είναι ευανάγνωστα όταν θα μπούν μπροστά απο αυτό το χρώμα.
     var accessibleFontColor: Color {
-        #if os(macOS)
-        guard self != Color.clear else { return Color.primary }
-        guard self != Color.accentColor else { return Color.primary }
-        #endif
+//        #if os(macOS)
+//        guard self != Color.clear else { return Color.primary }
+//        guard self != Color.accentColor else { return Color.primary }
+//        #endif
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
@@ -43,10 +43,10 @@ public extension Color {
     
     /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό, μαύρο ή clear. Προορίζεται για φόντο σε Fonts, για να είναι ευανάγνωστα ανάλογα με το χρώμα τους.
     var accessibleBackgroundColor: Color {
-        #if os(macOS)
-        guard self != Color.clear else { return Color.primary }
-        guard self != Color.accentColor else { return Color.primary }
-        #endif
+//        #if os(macOS)
+//        guard self != Color.clear else { return Color.primary }
+//        guard self != Color.accentColor else { return Color.primary }
+//        #endif
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
@@ -64,17 +64,23 @@ public extension Color {
     
     /// Επιστρέφει τα χρώματα του Color ξεχωριστά.
     internal var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)? {
-        #if os(macOS)
-        guard self != Color.clear else { return nil }
-        guard self != Color.accentColor else { return nil }
-        #endif
+//        #if os(macOS)
+//        guard self != Color.clear else { return nil }
+//        guard self != Color.accentColor else { return nil }
+//        #endif
         // εδώ θα αποθηκεύονται προσωρινά τα χρώματα
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
         var o: CGFloat = 0
+        #if os(macOS)
+        // Για macOS πρέπει να εισάγω εγώ την παλέτα χρωμάτων (Color Space)
+        guard let colorWithColorSpace = NativeColor(self).usingColorSpace(.sRGB) else { return nil }
+        #else
+        let colorWithColorSpace = NativeColor(self)
+        #endif
         // χρησιμοποιώ την συνάρτηση (που προφανώς προέρχεται απο objective C) που παρέχει το UIColor για να πάρω τα χρώματα.
-        NativeColor(self).getRed(&r, green: &g, blue: &b, alpha: &o)
+        colorWithColorSpace.getRed(&r, green: &g, blue: &b, alpha: &o)
         return ((r), (g), (b), (o))
     }
 
