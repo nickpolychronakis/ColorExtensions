@@ -15,7 +15,8 @@ public extension Color {
     init?(_ data: Data?) {
         guard let data = data else { return nil }
         guard let newDiaryColor = try? JSONDecoder().decode(DiaryColor.self, from: data) else { return nil }
-        self.init(.sRGB, red: newDiaryColor.r, green: newDiaryColor.g, blue: newDiaryColor.b, opacity: newDiaryColor.a)
+        let uiColor = UIColor(red: newDiaryColor.r, green: newDiaryColor.g, blue: newDiaryColor.b, alpha: newDiaryColor.a)
+        self.init(uiColor)
     }
     
     /// Μετατρέπει το Color σε Data.
@@ -61,7 +62,7 @@ public extension Color {
     // MARK: - INTERNALS
     
     /// Επιστρέφει τα χρώματα του Color ξεχωριστά.
-    internal var components: (red: Double, green: Double, blue: Double, opacity: Double)? {
+    internal var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)? {
         #if os(macOS)
         guard self != Color.clear else { return nil }
         guard self != Color.accentColor else { return nil }
@@ -73,15 +74,15 @@ public extension Color {
         var o: CGFloat = 0
         // χρησιμοποιώ την συνάρτηση (που προφανώς προέρχεται απο objective C) που παρέχει το UIColor για να πάρω τα χρώματα.
         NativeColor(self).getRed(&r, green: &g, blue: &b, alpha: &o)
-        return (Double(r), Double(g), Double(b), Double(o))
+        return ((r), (g), (b), (o))
     }
 
     /// Το χρησιμοποιώ σαν wrapper για να μετατρέψω το Color σε Data και το αντίστροφο. Το κάνω έτσι γιατί δεν μπορώ να μετατρέψω αλλιώς το Color σε Codable.
     internal struct DiaryColor: Codable {
-        var r: Double
-        var g: Double
-        var b: Double
-        var a: Double
+        var r: CGFloat
+        var g: CGFloat
+        var b: CGFloat
+        var a: CGFloat
     }
     
     internal func isLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
