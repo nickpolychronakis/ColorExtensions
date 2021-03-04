@@ -33,4 +33,25 @@ final class ColorExtensionsTests: XCTestCase {
             XCTAssertEqual(systemColorComponents?.opacity, colorFromDataComponents?.opacity)
         }
     }
+    
+    // MARK: - ACCESSIBLE COLORS
+    // Σιγουρεύομαι ότι επιστρέφει το σωστό χρώμα για τα fonts ανάλογα με το χρώμα του φόντου
+    func testAccessibleFontColor() {
+        let accessibleColorFontUnderTestForLightBackground = Color(.sRGB, red: 0.55, green: 0.55, blue: 0.55, opacity: 1).accessibleFontColor
+        XCTAssertEqual(accessibleColorFontUnderTestForLightBackground, Color.white)
+        let accessibleColorFontUnderTestForDarkBackground = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6, opacity: 1).accessibleFontColor
+        XCTAssertEqual(accessibleColorFontUnderTestForDarkBackground, Color.black)
+    }
+    // Σιγουρεύομαι ότι επιστρέφει το σωστό χρώμα για το φόντο, ανάλογα με το χρώμα των fonts.
+    func testAccessibleBackgroundColor() {
+        let accessibleColorFontUnderTestForTooLight = Color(.sRGB, red: 0.9, green: 0.9, blue: 0.9, opacity: 1).accessibleBackgroundColor
+        XCTAssertEqual(accessibleColorFontUnderTestForTooLight, Color.black)
+        let accessibleColorFontUnderTestForMedium = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5, opacity: 1).accessibleBackgroundColor
+        XCTAssertEqual(accessibleColorFontUnderTestForMedium, Color.clear)
+        let accessibleColorFontUnderTestForTooDark = Color(.sRGB, red: 0.2, green: 0.2, blue: 0.2, opacity: 1).accessibleBackgroundColor
+        XCTAssertEqual(accessibleColorFontUnderTestForTooDark, Color.white)
+    }
+    
+    // MARK: - INTERNALS
+    
 }

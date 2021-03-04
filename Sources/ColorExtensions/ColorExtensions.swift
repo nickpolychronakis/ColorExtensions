@@ -28,7 +28,7 @@ public extension Color {
     }
     
     // MARK: - ACCESSIBLE COLORS
-    /// This color is either black or white, whichever is more accessible when viewed against the self color.
+    /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό ή μαύρο. Προορίζεται για Fonts, για να είναι ευανάγνωστα όταν θα μπούν μπροστά απο αυτό το χρώμα.
     var accessibleFontColor: Color {
         #if os(macOS)
         guard self != Color.clear else { return Color.primary }
@@ -41,6 +41,7 @@ public extension Color {
         return isLightColor(red: red, green: green, blue: blue) ? .black : .white
     }
     
+    /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό, μαύρο ή clear. Προορίζεται για φόντο σε Fonts, για να είναι ευανάγνωστα ανάλογα με το χρώμα τους.
     var accessibleBackgroundColor: Color {
         #if os(macOS)
         guard self != Color.clear else { return Color.primary }
@@ -86,12 +87,21 @@ public extension Color {
     }
     
     internal func isLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let lightRed = red > 0.65
-        let lightGreen = green > 0.65
-        let lightBlue = blue > 0.65
+        let lightRed = red > 0.60
+        let lightGreen = green > 0.60
+        let lightBlue = blue > 0.60
 
         let lightness = [lightRed, lightGreen, lightBlue].reduce(0) { $1 ? $0 + 1 : $0 }
         return lightness >= 2
+    }
+    
+    internal func isDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
+        let darkRed = red < 0.85
+        let darkGreen = green < 0.85
+        let darkBlue = blue < 0.85
+
+        let darkness = [darkRed, darkGreen, darkBlue].reduce(0) { $1 ? $0 + 1 : $0 }
+        return darkness >= 2
     }
     
     internal func isTooLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
