@@ -21,19 +21,20 @@ final class ColorExtensionsTests: XCTestCase {
             .clear,
             .accentColor
         ]
-        for underTestColor in underTestColors {
-//            print(underTestColor.description)
-            let colorData = underTestColor.convertToData()
-            XCTAssertNotNil(colorData, "Δεν δούλεψε σωστά η μετατροπή απο color σε data")
-            let colorFromData = Color(colorData)
-            XCTAssertNotNil(colorFromData, "Δεν δούλεψε σωστά η μετατροπή απο data σε color")
-            let systemColorComponents = underTestColor.components
-            let colorFromDataComponents = colorFromData?.components
-            
-            XCTAssertEqual(systemColorComponents?.red, colorFromDataComponents?.red)
-            XCTAssertEqual(systemColorComponents?.green, colorFromDataComponents?.green)
-            XCTAssertEqual(systemColorComponents?.blue, colorFromDataComponents?.blue)
-            XCTAssertEqual(systemColorComponents?.opacity, colorFromDataComponents?.opacity)
+        measure {
+            for underTestColor in underTestColors {
+                let colorData = underTestColor.convertToData()
+                XCTAssertNotNil(colorData, "Δεν δούλεψε σωστά η μετατροπή απο color σε data")
+                let colorFromData = Color(colorData)
+                XCTAssertNotNil(colorFromData, "Δεν δούλεψε σωστά η μετατροπή απο data σε color")
+                let systemColorComponents = underTestColor.components
+                let colorFromDataComponents = colorFromData?.components
+                
+                XCTAssertEqual(systemColorComponents?.red, colorFromDataComponents?.red)
+                XCTAssertEqual(systemColorComponents?.green, colorFromDataComponents?.green)
+                XCTAssertEqual(systemColorComponents?.blue, colorFromDataComponents?.blue)
+                XCTAssertEqual(systemColorComponents?.opacity, colorFromDataComponents?.opacity)
+            }
         }
     }
     
