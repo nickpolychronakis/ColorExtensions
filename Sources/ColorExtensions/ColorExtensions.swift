@@ -27,33 +27,33 @@ public extension Color {
         return newData
     }
     
+    /// Το χρησιμοποιώ σαν wrapper για να μετατρέψω το Color σε Data και το αντίστροφο. Το κάνω έτσι γιατί δεν μπορώ να μετατρέψω αλλιώς το Color σε Codable.
+    private struct DiaryColor: Codable {
+        var r: CGFloat
+        var g: CGFloat
+        var b: CGFloat
+        var a: CGFloat
+    }
+    
     // MARK: - ACCESSIBLE COLORS
     /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό ή μαύρο. Προορίζεται για Fonts, για να είναι ευανάγνωστα όταν θα μπούν μπροστά απο αυτό το χρώμα.
     var accessibleFontColor: Color {
-//        #if os(macOS)
-//        guard self != Color.clear else { return Color.primary }
-//        guard self != Color.accentColor else { return Color.primary }
-//        #endif
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
         NativeColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
-        return isLightColor(red: red, green: green, blue: blue) ? .black : .white
+        return Self.isLightColor(red: red, green: green, blue: blue) ? .black : .white
     }
     
     /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό, μαύρο ή clear. Προορίζεται για φόντο σε Fonts, για να είναι ευανάγνωστα ανάλογα με το χρώμα τους.
     var accessibleBackgroundColor: Color {
-//        #if os(macOS)
-//        guard self != Color.clear else { return Color.primary }
-//        guard self != Color.accentColor else { return Color.primary }
-//        #endif
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
         NativeColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
-        if isTooLightColor(red: red, green: green, blue: blue) {
+        if Self.isTooLightColor(red: red, green: green, blue: blue) {
             return .black
-        } else if isTooDarkColor(red: red, green: green, blue: blue) {
+        } else if Self.isTooDarkColor(red: red, green: green, blue: blue) {
             return Color.white
         } else {
             return Color.clear
@@ -62,12 +62,9 @@ public extension Color {
     
     // MARK: - INTERNALS
     
-    /// Επιστρέφει τα χρώματα του Color ξεχωριστά.
+    /// Επιστρέφει τα χρώματα του Color
+    /// ΠΡΟΣΟΧΗ: Σε περίπτωση που μας ενδιαφέρει η μεγάλη ακρίβια στις τιμές, όταν δημιουργούμε ένα χρώμα απο τα βασικά χρώματα, να χρησιμοποιούμε το UIColor ή NSColor και μετά να το μετατρέπουμε σε Color. Το Color της SwiftUI όταν δημιουργείται απο τα επιμέρους χρώματα, και μετά τα ξαναδιαχωρίσουμε με το components, χάνεται η ακρίβεια και υπάρχουν διαφορές στους μεγάλους δεκαδικούς αριθμούς.
     internal var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)? {
-//        #if os(macOS)
-//        guard self != Color.clear else { return nil }
-//        guard self != Color.accentColor else { return nil }
-//        #endif
         // εδώ θα αποθηκεύονται προσωρινά τα χρώματα
         var r: CGFloat = 0
         var g: CGFloat = 0
@@ -83,16 +80,8 @@ public extension Color {
         colorWithColorSpace.getRed(&r, green: &g, blue: &b, alpha: &o)
         return ((r), (g), (b), (o))
     }
-
-    /// Το χρησιμοποιώ σαν wrapper για να μετατρέψω το Color σε Data και το αντίστροφο. Το κάνω έτσι γιατί δεν μπορώ να μετατρέψω αλλιώς το Color σε Codable.
-    internal struct DiaryColor: Codable {
-        var r: CGFloat
-        var g: CGFloat
-        var b: CGFloat
-        var a: CGFloat
-    }
     
-    internal func isLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
+    internal static func isLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
         let lightRed = red > 0.60
         let lightGreen = green > 0.60
         let lightBlue = blue > 0.60
@@ -101,16 +90,7 @@ public extension Color {
         return lightness >= 2
     }
     
-    internal func isDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let darkRed = red < 0.85
-        let darkGreen = green < 0.85
-        let darkBlue = blue < 0.85
-
-        let darkness = [darkRed, darkGreen, darkBlue].reduce(0) { $1 ? $0 + 1 : $0 }
-        return darkness >= 2
-    }
-    
-    internal func isTooLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
+    internal static func isTooLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
         let lightRed = red > 0.85
         let lightGreen = green > 0.85
         let lightBlue = blue > 0.85
@@ -119,10 +99,19 @@ public extension Color {
         return lightness >= 2
     }
     
-    internal func isTooDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let darkRed = red < 0.25
-        let darkGreen = green < 0.25
-        let darkBlue = blue < 0.25
+    internal static func isDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
+        let darkRed = red < 0.40
+        let darkGreen = green < 0.40
+        let darkBlue = blue < 0.40
+
+        let darkness = [darkRed, darkGreen, darkBlue].reduce(0) { $1 ? $0 + 1 : $0 }
+        return darkness >= 2
+    }
+    
+    internal static func isTooDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
+        let darkRed = red < 0.15
+        let darkGreen = green < 0.15
+        let darkBlue = blue < 0.15
 
         let darkness = [darkRed, darkGreen, darkBlue].reduce(0) { $1 ? $0 + 1 : $0 }
         return darkness >= 2

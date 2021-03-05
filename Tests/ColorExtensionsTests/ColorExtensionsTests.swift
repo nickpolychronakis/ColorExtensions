@@ -51,13 +51,58 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(accessibleColorFontUnderTestForTooLight, Color.black)
         let accessibleColorFontUnderTestForMedium = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5, opacity: 1).accessibleBackgroundColor
         XCTAssertEqual(accessibleColorFontUnderTestForMedium, Color.clear)
-        let accessibleColorFontUnderTestForTooDark = Color(.sRGB, red: 0.2, green: 0.2, blue: 0.2, opacity: 1).accessibleBackgroundColor
+        let accessibleColorFontUnderTestForTooDark = Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 1).accessibleBackgroundColor
         XCTAssertEqual(accessibleColorFontUnderTestForTooDark, Color.white)
     }
     
     // MARK: - INTERNALS
     
+    func testComponents() {
+        let red: CGFloat = 0.2
+        let green: CGFloat = 0.5
+        let blue: CGFloat = 0.8
+        let alpha: CGFloat = 1.0
+        #if os(macOS)
+        let nsColor = NSColor.init(srgbRed: red, green: green, blue: blue, alpha: alpha)
+        let color = Color(nsColor)
+        #else
+        let uiColor = UIColor.init(red: red, green: green, blue: blue, alpha: alpha)
+        let color = Color(uiColor)
+        #endif
+        
+        let components = color.components
+
+        XCTAssertEqual(components?.red, 0.2)
+        XCTAssertEqual(components?.green, 0.5)
+        XCTAssertEqual(components?.blue, 0.8)
+        XCTAssertEqual(components?.opacity, 1.0)
+    }
     
+    func testIsLightColor() {
+        let sutLightColor = Color.isLightColor(red: 0.61, green: 0.61, blue: 0.61)
+        let sutDarkColor = Color.isLightColor(red: 0.59, green: 0.59, blue: 0.59)
+        XCTAssertTrue(sutLightColor)
+        XCTAssertFalse(sutDarkColor)
+    }
     
+    func testIsTooLightColor() {
+        let sutLightColor = Color.isTooLightColor(red: 0.86, green: 0.86, blue: 0.86)
+        let sutDarkColor = Color.isTooLightColor(red: 0.84, green: 0.84, blue: 0.84)
+        XCTAssertTrue(sutLightColor)
+        XCTAssertFalse(sutDarkColor)
+    }
     
+    func testIsDarkColor() {
+        let sutLightColor = Color.isDarkColor(red: 0.41, green: 0.41, blue: 0.41)
+        let sutDarkColor = Color.isDarkColor(red: 0.39, green: 0.39, blue: 0.39)
+        XCTAssertFalse(sutLightColor)
+        XCTAssertTrue(sutDarkColor)
+    }
+    
+    func testIsTooDarkColor() {
+        let sutLightColor = Color.isTooDarkColor(red: 0.16, green: 0.16, blue: 0.16)
+        let sutDarkColor = Color.isTooDarkColor(red: 0.14, green: 0.14, blue: 0.14)
+        XCTAssertFalse(sutLightColor)
+        XCTAssertTrue(sutDarkColor)
+    }
 }
