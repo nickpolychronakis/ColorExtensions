@@ -23,7 +23,7 @@ final class ColorExtensionsTests: XCTestCase {
         ]
         measure {
             for underTestColor in underTestColors {
-                let colorData = underTestColor.convertToData()
+                let colorData = underTestColor.data()
                 XCTAssertNotNil(colorData, "Δεν δούλεψε σωστά η μετατροπή απο color σε data")
                 let colorFromData = Color(colorData)
                 XCTAssertNotNil(colorFromData, "Δεν δούλεψε σωστά η μετατροπή απο data σε color")
@@ -45,15 +45,6 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(accessibleColorFontUnderTestForLightBackground, Color.white)
         let accessibleColorFontUnderTestForDarkBackground = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6, opacity: 1).accessibleFontColor
         XCTAssertEqual(accessibleColorFontUnderTestForDarkBackground, Color.black)
-    }
-    // Σιγουρεύομαι ότι επιστρέφει το σωστό χρώμα για το φόντο, ανάλογα με το χρώμα των fonts.
-    func testAccessibleBackgroundColor() {
-        let accessibleColorFontUnderTestForTooLight = Color(.sRGB, red: 0.9, green: 0.9, blue: 0.9, opacity: 1).accessibleBackgroundColor
-        XCTAssertEqual(accessibleColorFontUnderTestForTooLight, Color.black)
-        let accessibleColorFontUnderTestForMedium = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5, opacity: 1).accessibleBackgroundColor
-        XCTAssertEqual(accessibleColorFontUnderTestForMedium, Color.clear)
-        let accessibleColorFontUnderTestForTooDark = Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 1).accessibleBackgroundColor
-        XCTAssertEqual(accessibleColorFontUnderTestForTooDark, Color.white)
     }
     
     // MARK: - INTERNALS
@@ -86,13 +77,6 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertFalse(sutDarkColor)
     }
     
-    func testIsTooLightColor() {
-        let sutLightColor = Color.isTooLightColor(red: 0.86, green: 0.86, blue: 0.86)
-        let sutDarkColor = Color.isTooLightColor(red: 0.84, green: 0.84, blue: 0.84)
-        XCTAssertTrue(sutLightColor)
-        XCTAssertFalse(sutDarkColor)
-    }
-    
     func testIsDarkColor() {
         let sutLightColor = Color.isDarkColor(red: 0.41, green: 0.41, blue: 0.41)
         let sutDarkColor = Color.isDarkColor(red: 0.39, green: 0.39, blue: 0.39)
@@ -100,10 +84,4 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertTrue(sutDarkColor)
     }
     
-    func testIsTooDarkColor() {
-        let sutLightColor = Color.isTooDarkColor(red: 0.16, green: 0.16, blue: 0.16)
-        let sutDarkColor = Color.isTooDarkColor(red: 0.14, green: 0.14, blue: 0.14)
-        XCTAssertFalse(sutLightColor)
-        XCTAssertTrue(sutDarkColor)
-    }
 }

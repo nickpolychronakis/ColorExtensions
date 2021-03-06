@@ -20,7 +20,7 @@ public extension Color {
     }
     
     /// Μετατρέπει το Color σε Data.
-    func convertToData() -> Data? {
+    func data() -> Data? {
         guard let components = self.components else { return nil }
         let tempDiaryColor = DiaryColor(r: components.red, g: components.green, b: components.blue, a: components.opacity)
         guard let newData = try? JSONEncoder().encode(tempDiaryColor) else { return nil }
@@ -43,21 +43,6 @@ public extension Color {
         var blue: CGFloat = 0
         NativeColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
         return Self.isLightColor(red: red, green: green, blue: blue) ? .black : .white
-    }
-    
-    /// Ανάλογα με το πόσο φωτεινό ή σκούρο είναι ένα χρώμα, επιστρέφει λευκό, μαύρο ή clear. Προορίζεται για φόντο σε Fonts, για να είναι ευανάγνωστα ανάλογα με το χρώμα τους.
-    var accessibleBackgroundColor: Color {
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        NativeColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
-        if Self.isTooLightColor(red: red, green: green, blue: blue) {
-            return .black
-        } else if Self.isTooDarkColor(red: red, green: green, blue: blue) {
-            return Color.white
-        } else {
-            return Color.clear
-        }
     }
     
     // MARK: - INTERNALS
@@ -90,15 +75,6 @@ public extension Color {
         return lightness >= 2
     }
     
-    internal static func isTooLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let lightRed = red > 0.85
-        let lightGreen = green > 0.85
-        let lightBlue = blue > 0.85
-
-        let lightness = [lightRed, lightGreen, lightBlue].reduce(0) { $1 ? $0 + 1 : $0 }
-        return lightness >= 2
-    }
-    
     internal static func isDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
         let darkRed = red < 0.40
         let darkGreen = green < 0.40
@@ -108,12 +84,4 @@ public extension Color {
         return darkness >= 2
     }
     
-    internal static func isTooDarkColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let darkRed = red < 0.15
-        let darkGreen = green < 0.15
-        let darkBlue = blue < 0.15
-
-        let darkness = [darkRed, darkGreen, darkBlue].reduce(0) { $1 ? $0 + 1 : $0 }
-        return darkness >= 2
-    }
 }
