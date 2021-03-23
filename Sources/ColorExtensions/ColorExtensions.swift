@@ -41,7 +41,13 @@ public extension Color {
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
-        NativeColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
+        #if os(macOS)
+        // Για macOS πρέπει να εισάγω εγώ την παλέτα χρωμάτων (Color Space)
+        guard let colorWithColorSpace = NativeColor(self).usingColorSpace(.sRGB) else { return Color(NativeColor.textBackgroundColor) }
+        #else
+        let colorWithColorSpace = NativeColor(self)
+        #endif
+        colorWithColorSpace.getRed(&red, green: &green, blue: &blue, alpha: nil)
         return Self.isLightColor(red: red, green: green, blue: blue) ? .black : .white
     }
     
